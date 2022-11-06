@@ -2,15 +2,17 @@
 
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_1/models/catalog.dart';
-import 'package:flutter_application_1/widgets/drawer.dart';
-import 'package:flutter_application_1/widgets/item_widget.dart';
+import 'package:flutter_application_1/utils/routes.dart';
 import 'package:flutter_application_1/widgets/theme.dart';
 import "package:velocity_x/velocity_x.dart";
 
-import '../utils/apptext.dart';
+import '../widgets/home_widget/app_list.dart';
+import '../widgets/home_widget/home_header.dart';
+import "package:http/http.dart" as http;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void loadData() async {
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
     final res = await rootBundle.loadString("assets/data/data.json");
     final parsedRes = jsonDecode(res);
     final itemsData = parsedRes["products"];
@@ -44,9 +46,22 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void navigateToCart(BuildContext context) {
+    Navigator.pushNamed(context, AppRoutes.cart);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.creamColor,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => navigateToCart(context),
+        backgroundColor: AppTheme.darkBluishColor,
+        child: Icon(
+          CupertinoIcons.cart,
+          color: Colors.white,
+        ),
+      ),
       body: SafeArea(
         child: Container(
           padding: EdgeInsets.all(32),
@@ -55,10 +70,10 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               AppHeader(),
               loading
-                  ? Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : AppList()
+                  ? CircularProgressIndicator(
+                      color: AppTheme.darkBluishColor,
+                    ).centered().expand()
+                  : AppList().py16().expand()
             ],
           ),
         ),
@@ -66,44 +81,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
-class AppHeader extends StatelessWidget {
-  const AppHeader({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AppText(
-          fontSize: 32,
-          color: AppTheme.darkBluishColor,
-          fontWeight: FontWeight.bold,
-          title: "Catalog App",
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        AppText(
-          title: "Trending Products",
-          fontSize: 16,
-        ),
-      ],
-    );
-  }
-}
-
-class AppList extends StatelessWidget {
-  const AppList({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
-
-
-
 
 
 
